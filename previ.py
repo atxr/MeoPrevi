@@ -108,5 +108,5 @@ for sat in previ:
     df.append(dict(Task=s, Start=start, Finish=finish))
 
 print(df)
-fig = create_gantt(df, group_tasks=True)
+fig = create_gantt(df, title="Previ MEO", group_tasks=True, height=1000)
 fig.show()
