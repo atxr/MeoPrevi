@@ -2,93 +2,12 @@
 # Grab the prevision of important satellites
 #import wget 
 import os
+from plotly.figure_factory import create_gantt
+from maj_sats import *
 
 previ = []
-sats = {
-        'lageos 1 ': 8820,
-        'lageos 2 ': 22195,
-        'etalon 1 ': 19751,
-        'etalon 2 ': 20026,
-        'starlette': 7646,
-        'ajissai  ': 16908,
-        'larets   ': 27944,
-        'lares    ': 38077,
-        'RB: fregat'   : 43089,
-        'RB: helios2B'  : 36124,
-        'RB: helios2A'  : 28492,
-        'Stella'  :  22824,
-        'Sentinel-6A/Jason-CSA'  :  46984,
-        'GLONASS-141'  :  44850,
-        'GLONASS-140'  :  44299,
-        'GLONASS-139'  :  43687,
-        'ICESat-2'  :  43613,
-        'Galileo-220'  :  43567,
-        'Galileo-219'  :  43566,
-        'Galileo-222'  :  43565,
-        'Galileo-221'  :  43564,
-        'GLONASS-138'  :  43508,
-        'IRNSS-1I'  :  43286,
-        'BeiDou-3M10'  :  43246,
-        'BeiDou-3M9'  :  43245,
-        'BeiDou-3M3'  :  43208,
-        'Galileo-218'  :  43058,
-        'Galileo-217'  :  43057,
-        'Galileo-216'  :  43056,
-        'Galileo-215'  :  43055,
-        'BeiDou-3M2'  :  43002,
-        'GLONASS-137'  :  42939,
-        'TechnoSat'  :  42829,
-        'Galileo-214'  :  41862,
-        'Galileo-213'  :  41861,
-        'Galileo-212'  :  41860,
-        'Galileo-207'  :  41859,
-        'GLONASS-136'  :  41554,
-        'Galileo-210'  :  41550,
-        'Galileo-211'  :  41549,
-        'IRNSS-1F'  :  41384,
-        'GLONASS-135'  :  41330,
-        'IRNSS-1E'  :  41241,
-        'Jason-3'  :  41240,
-        'Galileo-208'  :  41175,
-        'Galileo-209'  :  41174,
-        'Galileo-206'  :  40890,
-        'Galileo-205'  :  40889,
-        'IRNSS-1D'  :  40547,
-        'Galileo-204'  :  40545,
-        'Galileo-203'  :  40544,
-        'GLONASS-134'  :  40315,
-        'IRNSS-1C'  :  40269,
-        'Galileo-202'  :  40129,
-        'Galileo-201'  :  40128,
-        'GLONASS-133'  :  40001,
-        'IRNSS-1B'  :  39635,
-        'GLONASS-132'  :  39620,
-        'GLONASS-131'  :  39155,
-        'SARAL'  :  39086,
-        'Galileo-104'  :  38858,
-        'Galileo-103'  :  38857,
-        'COMPASS-M3 '  :  38250,
-        'COMPASS-I5'  :  37948,
-        'GLONASS-127'  :  37869,
-        'GLONASS-129'  :  37868,
-        'GLONASS-128'  :  37867,
-        'Galileo-102'  :  37847,
-        'Galileo-101'  :  37846,
-        'COMPASS-I3'  :  37384,
-        'GLONASS-125'  :  37372,
-        'GLONASS-122'  :  37139,
-        'TanDEM-X'  :  36605,
-        'Cryosat-2'  :  36508,
-        'GLONASS-120'  :  36402,
-        'GLONASS-121'  :  36401,
-        'GLONASS-119'  :  36400,
-        'COMPASS-G1'  :  36287,
-        'GLONASS-116'  :  36111,
-        'GLONASS-107'  :  32393,
-        'GLONASS-105'  :  32276,
-        'GLONASS-106'  :  32275,
-        'TerraSAR-X'  :  31698,
-        'Larets'  :  27944}
+
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 for sat in sats:
     
@@ -118,8 +37,7 @@ for sat in sats:
     line=line.replace('\t', '')
 
     #split differents lines
-    line = line.split('</tr>')[:-1] # the last element is an empty string
-    line = [x[x.find('>')+1:] for x in line]      # the first <tr ... > balise isn't important
+    line = line.split('</tr>')[:-1] # the last element is an empty string line = [x[x.find('>')+1:] for x in line]      # the first <tr ... > balise isn't important
 
     #split differents rows in each lines
     line = [x.split('</td>')[:-1] for x in line][:-1] # the last element of each split is an empty string
@@ -132,8 +50,13 @@ for sat in sats:
     days = [passage[id_day] for passage in line]
     #shape of day: "<td><a ...>DAY</a>"
     days = [day[day.find('>')+1:] for day in days]  # filter the first <td> balise
+    days = [day[day.find('>')+1:] for day in days]  # filter the first <td> balise
     days = [day[day.find('>')+1:] for day in days]  # filter the <a> balise
     days = [day[:-4] for day in days]
+    for i in range(len(days)):
+        m = days[i][-3:]
+        days[i] = days[i].replace(m, str(months.index(m)+1).rjust(2,"0"))
+        days[i] = "2021-"+days[i][-2:]+"-"+days[i][:2]
 
     begs = [passage[id_beg] for passage in line]
     begs = [beg[4:] for beg in begs]
@@ -154,11 +77,12 @@ def local_to_utc(sat):
     s,d,b,e = sat
     b = b.split(":")
     e = e.split(":")
+    d = d.split("-")
     if int(b[0]) < 2:
         #change the day
-        return (s,str(int(d[:2])-1)+d[2:], ":".join([str((int(b[0])-2)%24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
+        return (s,'-'.join(d[:2]+[str(int(d[2])-1)]), ":".join([str((int(b[0])-2)%24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
     else:
-        return (s,d, ":".join([str((int(b[0])-2) % 24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
+        return (s,'-'.join(d), ":".join([str((int(b[0])-2) % 24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
 
 
 
@@ -167,10 +91,22 @@ def rel(x):
     b = [int(x) for x in b.split(':')]
     return (int(d[:2]), b[0], b[1], b[2])
 
-previ = sorted(previ, key=rel)
+df = []
+for sat in previ:
+    sat = local_to_utc(sat)
+    print(sat)
+    s,d,b,e = sat
+    s = s.ljust(10, ' ')
+    start = d+" "+b
+    if int(b[:2]) > int(e[:2]):
+        print(d)
+        d = d.split("-")
+        #day +1 for the end date
+        d[2] = str(int(d[2])+1)
+        d = "-".join(d)
+    finish = d+" "+e
+    df.append(dict(Task=s, Start=start, Finish=finish))
 
-with open('previ.data', 'w') as out:
-    for sat in previ:
-        sat = local_to_utc(sat)
-        out.write(str(sat)+"\n")
-
+print(df)
+fig = create_gantt(df, group_tasks=True)
+fig.show()
