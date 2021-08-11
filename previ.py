@@ -68,7 +68,6 @@ sats = {
         'Galileo-104'  :  38858,
         'Galileo-103'  :  38857,
         'COMPASS-M3 '  :  38250,
-        'LARES'  :  38077,
         'COMPASS-I5'  :  37948,
         'GLONASS-127'  :  37869,
         'GLONASS-129'  :  37868,
@@ -151,6 +150,18 @@ for sat in sats:
             previ.append((sat, day, beg, end))
 
 
+def local_to_utc(sat):
+    s,d,b,e = sat
+    b = b.split(":")
+    e = e.split(":")
+    if int(b[0]) < 2:
+        #change the day
+        return (s,str(int(d[:2])-1)+d[2:], ":".join([str((int(b[0])-2)%24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
+    else:
+        return (s,d, ":".join([str((int(b[0])-2) % 24).rjust(2,'0')]+b[1:]), ":".join([str((int(e[0])-2) % 24).rjust(2,'0')]+e[1:]))
+
+
+
 def rel(x):
     _,d,b,_ = x
     b = [int(x) for x in b.split(':')]
@@ -158,6 +169,8 @@ def rel(x):
 
 previ = sorted(previ, key=rel)
 
-for sat in previ:
-    print(sat)
+with open('previ.data', 'w') as out:
+    for sat in previ:
+        sat = local_to_utc(sat)
+        out.write(str(sat)+"\n")
 
