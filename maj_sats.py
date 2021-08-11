@@ -11,4 +11,13 @@ sats = {
         'Galileo-102'  :  37847,
         'Galileo-202'  :  40129,
         'Galileo-209'  :  41174,
-        'Galileo-210'  :  41550}
+        'Galileo-210'  :  41550,
+        'Glonass-131' : 39155,
+        'GLONASS-134'  :  40315,
+        'GLONASS-138'  :  43508,
+        'GLONASS-139'  :  43687,
+        'BeiDou-3M2'  :  43002,
+        'BeiDou-3M3'  :  43208,
+        'BeiDou-3M9'  :  43245,
+        'BeiDou-3M10'  :  43246
+        }
