@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # Grab the prevision of important satellites
+
 #import wget 
 import os
-from plotly.figure_factory import create_gantt
+from plotly.express import timeline
+import pandas as pd
+from datetime import datetime
 from maj_sats import *
 
 previ = []
@@ -91,22 +94,41 @@ def rel(x):
     b = [int(x) for x in b.split(':')]
     return (int(d[:2]), b[0], b[1], b[2])
 
-df = []
+df = pd.DataFrame([])
 for sat in previ:
     sat = local_to_utc(sat)
-    print(sat)
     s,d,b,e = sat
     s = s.ljust(10, ' ')
     start = d+" "+b
     if int(b[:2]) > int(e[:2]):
-        print(d)
         d = d.split("-")
         #day +1 for the end date
         d[2] = str(int(d[2])+1)
         d = "-".join(d)
     finish = d+" "+e
-    df.append(dict(Task=s, Start=start, Finish=finish))
+    df = df.append(pd.DataFrame([dict(Sat=s, Start=start, Finish=finish)]))
 
 print(df)
-fig = create_gantt(df, title="Previ MEO", group_tasks=True, height=1000)
-fig.show()
+
+utc = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+now = datetime.now().strftime("%Y-%m-%d %H:%M:%S") #UTC + 2h
+
+fig = timeline(df, x_start = 'Start', x_end='Finish', title="Previ MEO", y='Sat', color='Sat', range_x=[utc,now], hover_name='Sat', height=900)
+fig.update_layout(
+    hoverlabel=dict(
+        font_size=25
+    )
+)
+#fig.show()
+
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
+app = dash.Dash()
+app.layout = html.Div([
+    dcc.Graph(figure=fig)
+])
+
+app.run_server(debug=False, use_reloader=False)
+print("CTRL-CLICK on the link above.")
