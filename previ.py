@@ -7,6 +7,7 @@ from plotly.express import timeline
 import pandas as pd
 from datetime import datetime
 from maj_sats import *
+import webbrowser
 
 previ = []
 
@@ -130,5 +131,5 @@ app.layout = html.Div([
     dcc.Graph(figure=fig)
 ])
 
+os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
 app.run_server(debug=False, use_reloader=False)
-print("CTRL-CLICK on the link above.")
