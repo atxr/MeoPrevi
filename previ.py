@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 # Grab the prevision of important satellites
 
-#import wget 
 import os
 from plotly.express import timeline
 import pandas as pd
 from datetime import datetime, timedelta
 from maj_sats import *
-import webbrowser
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
+
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 df = pd.DataFrame([])
-for sat in ['lageos 1', 'lares']:
+for sat in sats:
     
     satid = sats[sat]
-
+    
+    #TODO: create a local database of previ with an expiration date to avoid dowloading again each data
     url = "https://heavens-above.com/PassSummary.aspx?lat=43.7413&lng=6.9&loc=Caussol&alt=0&tz=CET&satid="+str(satid)
     print(url)
     options = webdriver.FirefoxOptions()
@@ -63,7 +62,6 @@ fig.update_layout(
         font_size=25
     )
 )
-fig.show()
 
 import dash
 import dash_core_components as dcc

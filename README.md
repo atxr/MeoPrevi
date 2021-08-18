@@ -16,6 +16,7 @@ Otherwise, if you own the archive, exctract it with the command
 ```bash
 sudo unzip path/to/the/archive -d /opt
 ```
+**TODO**: Add installation of geckodriver
 
 ## Usage
 
@@ -46,13 +47,9 @@ To do so, use one of the three database as template. It must contain the **name*
 
 **TODO**: automate the addition of satellites
 
-## WARNING
-This script will be **expired after the August 19th of 2021**.
-If one wants to reuse it after that deadline, the link in the curl command of the script must be updated.
-
-**TODO**: fix this problem
-
 ## Dependencies
+
+Geckodriver, firefox for selenium
 
 Python3 and the following modules:
 - pandas
