@@ -24,7 +24,7 @@ The release of geckodriver can be [downloaded here](https://github.com/mozilla/g
 
 If you use Linux x64, you can simply use this command to dowload and add geckodriver to your path
 ```bash
-wget 'https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz'; sudo tar -xf geckodriver-v0.29.1-linux64.tar.gz -o /usr/bin
+wget 'https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz'; sudo tar -xf geckodriver-v0.29.1-linux64.tar.gz -C /usr/bin
 ```
 
 Then, to launch the script, execute 
