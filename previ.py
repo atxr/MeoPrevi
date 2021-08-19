@@ -21,7 +21,7 @@ for sat in sats:
     print(sat, end=' - ')
     
     try:
-        f = open('data/'+sat+'.data', 'r')
+        f = open('data/.'+sat+'.tmp', 'r')
         beg = datetime.fromisoformat(f.readline().strip('\n'))
         end = datetime.fromisoformat(f.readline().strip('\n'))
         now = datetime.utcnow()
@@ -43,7 +43,7 @@ for sat in sats:
         tab = driver.find_element_by_class_name("standardTable").text
         driver.close()
 
-        with open('data/'+sat+'.data', 'w') as f:
+        with open('data/.'+sat+'.tmp', 'w') as f:
             f.write(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write((datetime.utcnow() + timedelta(days=5)).strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write(tab)

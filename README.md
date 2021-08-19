@@ -31,7 +31,7 @@ Then, to launch the script, execute
 ```bash
 /opt/MeoPrevi/previ.py
 ```
-. It should automatically open a new tab in the default browser.
+It should automatically open a new tab in the default browser.
 If not, browse directly the link the terminal will print, usually http://127.0.0.1:8050
 If you got trouble with the script, check the dependencies section at the end.
 
@@ -56,7 +56,8 @@ To do so, use one of the three database as template. It must contain the **name*
 
 ## Dependencies
 
-Geckodriver, firefox for selenium
+Firefox
+Geckodriver for selenium. CF installation section.
 
 Python3 and the following modules:
 - pandas
