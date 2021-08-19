@@ -7,17 +7,13 @@ import pandas as pd
 from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
 
-database_sats = 'data/maj_sats.data'
 
-months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-with open(database_sats, 'r') as f:
-    sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
 
-df = pd.DataFrame([])
-for sat in sats:
-    
-    satid = sats[sat]
+def previ(sat, satid):
     print(sat, end=' - ')
     
     try:
@@ -69,34 +65,69 @@ for sat in sats:
             ends[i] += timedelta(days=1)
 
     clms = [int(x[sh['clm']][:-1]) for x in lines]
-
+    
+    df=pd.DataFrame([])
     for beg, end, clm in zip(begs, ends, clms):
         if int(clm) > 20:
-            df = df.append(pd.DataFrame([dict(Sat=sat.ljust(10, ' '), Start=beg, Finish=end)]))
+            df = df.append([dict(Sat=sat.ljust(10, ' '), Start=beg, Finish=end)])
+
+    return df
 
 
-print(df)
 
-utc = datetime.utcnow()
-xmin = (utc - timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
-xmax = (utc + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
 
-fig = timeline(df, x_start = 'Start', x_end='Finish', title="Previ MEO", y='Sat', color='Sat', range_x=[xmin,xmax], hover_name='Sat', height=900)
-fig.update_layout(
-    hoverlabel=dict(
-        font_size=25
+def get_figure(df):
+    utc = datetime.utcnow()
+    xmin = (utc - timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
+    xmax = (utc + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
+
+    fig = timeline(df, x_start = 'Start', x_end='Finish', title="Previ MEO", y='Sat', color='Sat', range_x=[xmin,xmax], hover_name='Sat', height=900)
+    fig.update_layout(
+        hoverlabel=dict(
+            font_size=25
+        )
     )
-)
+    return fig
 
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
 
-app = dash.Dash()
-app.layout = html.Div([
-    dcc.Graph(figure=fig)
-])
 
-os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
-app.run_server(debug=False, use_reloader=False)
+
+
+if __name__=='__main__':
+    database_sats = 'data/maj_sats.data'
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    with open(database_sats, 'r') as f:
+        sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
+
+    df = pd.DataFrame([])
+    for sat in sats:
+        df = df.append(previ(sat, sats[sat])) 
+
+    print(df)
+    fig = get_figure(df)
+
+    external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    app.layout = html.Div([
+        html.Label('Add new satellite'),
+        dcc.Input(id='new_sat_name', type='text'), 
+        dcc.Input(id='new_sat_id', type='text'),
+        html.Button('Add', id='add_button'),
+        dcc.Graph(figure=fig, id='timeline')
+    ])
+
+    @app.callback(
+        dash.dependencies.Output('timeline', 'figure'),
+        [dash.dependencies.Input('add_button', 'n_clicks')],
+        [dash.dependencies.State('new_sat_name', 'value')],
+        [dash.dependencies.State('new_sat_id', 'value')])
+    def update_output(n, sat, satid):
+        if sat != None and satid != None:
+            global df
+            df = df.append(previ(sat, satid))
+        return get_figure(df)
+
+    os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
+    app.run_server(debug=True)
 
