@@ -114,19 +114,28 @@ if __name__=='__main__':
         dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
         dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
         html.Button('Add', id='add_button'),
+        html.Button('Refresh', id='refresh_button'),
         dcc.Graph(figure=fig, id='timeline')
     ])
 
     @app.callback(
         dash.dependencies.Output('timeline', 'figure'),
+        [dash.dependencies.Input('refresh_button', 'n_clicks')],
         [dash.dependencies.Input('add_button', 'n_clicks')],
         [dash.dependencies.State('new_sat_name', 'value')],
         [dash.dependencies.State('new_sat_id', 'value')])
-    def update_output(n, sat, satid):
-        if sat != None and satid != None:
-            global df
+    def update_output(n_ref, n_add, sat, satid):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            raise dash.exceptions.PreventUpdate
+        
+        btn_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        global df
+        if btn_id == 'add_button':
             df = df.append(previ(sat, satid))
+
         return get_figure(df)
+
 
     os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
