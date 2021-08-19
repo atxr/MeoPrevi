@@ -5,11 +5,14 @@ import os
 from plotly.express import timeline
 import pandas as pd
 from datetime import datetime, timedelta
-from maj_sats import *
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
+database_sats = 'data/maj_sats.data'
+
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+with open(database_sats, 'r') as f:
+    sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
 
 df = pd.DataFrame([])
 for sat in sats:

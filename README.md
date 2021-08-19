@@ -29,12 +29,12 @@ If not, browse directly the link the terminal will print, usually http://127.0.0
 If you got trouble with the script, check the dependencies section at the end.
 
 ## List of satellites
-Different lists of satellites can be found in this repo. 
-The one used by default is maj\_sats.py. 
+Different lists of satellites can be found in the data directory. 
+The one used by default is data/maj\_sats.data. 
 List of aviable database:
-- maj\_sats.py: most important satellites, accoreded to the [ILRS priority list](https://ilrs.gsfc.nasa.gov/missions/mission_operations/priorities/index.html)
-- sats.py: most of the observable satallites from Calern. Warning, because of the length of this database, the display may be bad.
-- galileo.py: all Galileo GNSS european satellites
+- data/maj\_sats.data: most important satellites, accoreded to the [ILRS priority list](https://ilrs.gsfc.nasa.gov/missions/mission_operations/priorities/index.html)
+- data/sats.data: most of the observable satallites from Calern. Warning, because of the length of this database, the display may be bad.
+- data/galileo.data: all Galileo GNSS european satellites
 
 If one wants to change the database, modify at the beginning of previ.py the line 
 ```python
@@ -43,7 +43,7 @@ import maj_sats.py
 with the name of the correct database.
 
 One could add some satellites that aren't in the actual database to the timeline.
-To do so, use one of the three database as template. It must contain the **name** and the **Spacetrack catalog number** of each satellites which can be found on the heavens-above satellite database, at https://heavens-above.com/Satellites.aspx
+To do so, use one of the three database as template. It must contain the **name** and the **Spacetrack catalog number** of each satellites separated by a ~. Spacetrack catalog numbers can be found on the heavens-above satellite database, at https://heavens-above.com/Satellites.aspx
 
 **TODO**: automate the addition of satellites
 
