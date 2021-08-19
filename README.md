@@ -35,6 +35,10 @@ It should automatically open a new tab in the default browser.
 If not, browse directly the link the terminal will print, usually http://127.0.0.1:8050
 If you got trouble with the script, check the dependencies section at the end.
 
+## Add satellites
+
+The script provide a tool for adding a satelitte directly with its Spacetrack catalog number. Visit the [following website](https://heavens-above.com/Satellites.aspx) to find Spacetrack catalog numbers of the satellite you want to add.
+
 ## List of satellites
 Different lists of satellites can be found in the data directory. 
 The one used by default is data/maj\_sats.data. 
@@ -49,10 +53,6 @@ import maj_sats.py
 ```
 with the name of the correct database.
 
-One could add some satellites that aren't in the actual database to the timeline.
-To do so, use one of the three database as template. It must contain the **name** and the **Spacetrack catalog number** of each satellites separated by a ~. Spacetrack catalog numbers can be found on the heavens-above satellite database, at https://heavens-above.com/Satellites.aspx
-
-**TODO**: automate the addition of satellites
 
 ## Dependencies
 
@@ -66,4 +66,11 @@ Python3 and the following modules:
 - selenium
 
 These modules can be installed with pip for python3.
+
+#TODO 
+- Better deletion of sats
+- Visualize trajectory of the sat in the sky
+- Select time range for previ
+- Nicer interface
+- Display when dowloading
 

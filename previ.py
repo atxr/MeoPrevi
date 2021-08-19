@@ -111,8 +111,8 @@ if __name__=='__main__':
     app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
     app.layout = html.Div([
         html.Label('Add new satellite'),
-        dcc.Input(id='new_sat_name', type='text'), 
-        dcc.Input(id='new_sat_id', type='text'),
+        dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
+        dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
         html.Button('Add', id='add_button'),
         dcc.Graph(figure=fig, id='timeline')
     ])
