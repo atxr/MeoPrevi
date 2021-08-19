@@ -16,13 +16,20 @@ Otherwise, if you own the archive, exctract it with the command
 ```bash
 sudo unzip path/to/the/archive -d /opt
 ```
-**TODO**: Add installation of geckodriver
 
 ## Usage
 
+Before using the script, geckodriver, a dependencie of selenium must be placed in the PATH.
+The release of geckodriver can be [downloaded here](https://github.com/mozilla/geckodriver/releases)
+
+If you use Linux x64, you can simply use this command to dowload and add geckodriver to your path
+```bash
+wget 'https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz'; sudo tar -xf geckodriver-v0.29.1-linux64.tar.gz -o /usr/bin
+```
+
 Then, to launch the script, execute 
 ```bash
-/opt/previ.py
+/opt/MeoPrevi/previ.py
 ```
 . It should automatically open a new tab in the default browser.
 If not, browse directly the link the terminal will print, usually http://127.0.0.1:8050
