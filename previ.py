@@ -15,18 +15,40 @@ df = pd.DataFrame([])
 for sat in sats:
     
     satid = sats[sat]
+    print(sat, end=' - ')
     
-    #TODO: create a local database of previ with an expiration date to avoid dowloading again each data
-    url = "https://heavens-above.com/PassSummary.aspx?lat=43.7413&lng=6.9&loc=Caussol&alt=0&tz=CET&satid="+str(satid)
-    print(url)
-    options = webdriver.FirefoxOptions()
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
-    driver.get(url)
-    driver.find_element_by_id("ctl00_cph1_radioAll").click()
-    tab = driver.find_element_by_class_name("standardTable").text.split('\n')[2:]
-    lines = list(map(lambda x: x.split(' '), tab))
-    driver.close() 
+    try:
+        f = open('data/'+sat+'.data', 'r')
+        beg = datetime.fromisoformat(f.readline().strip('\n'))
+        end = datetime.fromisoformat(f.readline().strip('\n'))
+        now = datetime.utcnow()
+        if beg > now or now > end:
+            f.close()
+            raise Exception('Expired file')
+        
+        print('Using local database ...')
+        tab = f.read()
+
+    except (FileNotFoundError, Exception):
+        print('Downloading data ...')
+        url = "https://heavens-above.com/PassSummary.aspx?lat=43.7413&lng=6.9&loc=Caussol&alt=0&tz=CET&satid="+str(satid)
+        options = webdriver.FirefoxOptions()
+        options.add_argument("--headless")
+        driver = webdriver.Firefox(options=options)
+        driver.get(url)
+        driver.find_element_by_id("ctl00_cph1_radioAll").click()
+        tab = driver.find_element_by_class_name("standardTable").text
+        driver.close()
+
+        with open('data/'+sat+'.data', 'w') as f:
+            f.write(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S\n"))
+            f.write((datetime.utcnow() + timedelta(days=5)).strftime("%Y-%m-%d %H:%M:%S\n"))
+            f.write(tab)
+
+    
+    lines = tab.split('\n')[2:]
+    lines = list(map(lambda x: x.split(' '), lines))
+
 
     # shape of a line 
     #['18', 'Aug', '-', '08:42:50', '10°', 'NE', '09:04:22', '22°', 'E', '09:24:53', '10°', 'SE', 'daylight']
@@ -74,3 +96,4 @@ app.layout = html.Div([
 
 os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
 app.run_server(debug=False, use_reloader=False)
+

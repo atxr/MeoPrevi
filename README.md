@@ -55,6 +55,7 @@ Python3 and the following modules:
 - pandas
 - plotly (and its own dependencies like numpy)
 - dash
+- selenium
 
 These modules can be installed with pip for python3.
 
