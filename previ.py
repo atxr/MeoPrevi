@@ -3,6 +3,7 @@
 
 import os
 from plotly.express import timeline
+import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime, timedelta
 from selenium import webdriver
@@ -69,7 +70,8 @@ def previ(sat, satid):
     df=pd.DataFrame([])
     for beg, end, clm in zip(begs, ends, clms):
         if int(clm) > 20:
-            df = df.append([dict(Sat=sat.ljust(10, ' '), Start=beg, Finish=end)])
+            print(beg)
+            df = df.append([dict(Sat=sat, Start=beg, Finish=end)])
 
     return df
 
@@ -77,7 +79,7 @@ def previ(sat, satid):
 
 
 def get_figure(df):
-    utc = datetime.utcnow()
+    utc = datetime.utcnow().replace(microsecond=0)
     xmin = (utc - timedelta(minutes=10)).strftime("%Y-%m-%d %H:%M:%S")
     xmax = (utc + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -87,6 +89,8 @@ def get_figure(df):
             font_size=25
         )
     )
+    print(utc)
+    fig.add_vline(x=utc, line_width=3, line_dash="dash")
     return fig
 
 
