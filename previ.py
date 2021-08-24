@@ -2,6 +2,7 @@
 # Grab the prevision of important satellites
 
 
+import os
 import pandas as pd
 from plotly.express import timeline
 from selenium import webdriver
@@ -68,7 +69,6 @@ def previ(sat, satid):
     df=pd.DataFrame([])
     for beg, end, clm in zip(begs, ends, clms):
         if int(clm) > 20:
-            print(beg)
             df = df.append([dict(Sat=sat, Start=beg, Finish=end)])
 
     return df
@@ -93,7 +93,6 @@ def get_figure(df, range_x=[]):
             font_size=25
         )
     )
-    print(utc)
     fig.add_vline(x=utc, line_width=3, line_dash="dash")
     return fig, range_x
 
@@ -104,15 +103,16 @@ def get_df(sats):
         df = df.append(previ(sat, sats[sat])) 
     return df
 
+def get_sats(database_sats = 'data/maj_sats.data'):
+    with open(database_sats, 'r') as f:
+        sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
+    return sats
 
 
 if __name__=='__main__':
-    database_sats = 'data/maj_sats.data'
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     
-    with open(database_sats, 'r') as f:
-        sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
-
+    sats = get_sats()
     df = get_df(sats)
     fig, range_x = get_figure(df)
 
@@ -124,6 +124,15 @@ if __name__=='__main__':
         dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
         html.Button('Add', id='add_button'),
         html.Button('Refresh', id='refresh_button'),
+        html.Button('Update local database', id='update_local_button'),
+        dcc.Dropdown(
+            options=[
+                {'label': 'ILRS major satelittes', 'value': 'maj_sats.data'},
+                {'label': 'All satelittes', 'value': 'sats.data'},
+                {'label': 'Galileos', 'value': 'galileo.data'}
+            ],
+            value='maj_sats.data', id='dataset_dropdown'
+        ), 
         dcc.Graph(figure=fig, id='timeline'), 
         dcc.Interval(
             id='interval-component',
@@ -136,10 +145,12 @@ if __name__=='__main__':
         dash.dependencies.Output('timeline', 'figure'),
         [dash.dependencies.Input('refresh_button', 'n_clicks')],
         [dash.dependencies.Input('add_button', 'n_clicks')],
+        [dash.dependencies.Input('update_local_button', 'n_clicks')],
+        [dash.dependencies.Input('dataset_dropdown', 'value')],
         [dash.dependencies.Input('interval-component', 'n_intervals')],
         [dash.dependencies.State('new_sat_name', 'value')],
         [dash.dependencies.State('new_sat_id', 'value')])
-    def update_output(n_ref, n_add, n_inter, sat, satid):
+    def update_output(n_ref, n_add, n_upd_loc, dataset, n_inter, sat, satid):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise dash.exceptions.PreventUpdate
@@ -147,20 +158,37 @@ if __name__=='__main__':
         btn_id = ctx.triggered[0]['prop_id'].split('.')[0]
         global df
         global range_x
+        global sats
+        
         if btn_id == 'add_button':
             #add new satellite to the figure, update time, but keep the range_x
             df = df.append(previ(sat, satid))
             figure, range_x = get_figure(df, range_x=range_x)
+        
         elif btn_id == 'refresh_button':
             #update time and range_x 
             figure, range_x = get_figure(df)
+
+        elif btn_id == 'update_local_button':
+            #redownload every sats tpm file in the database
+            tmpfiles = [file for file in os.listdir(os.getcwd()+'/data') 
+                             if file[0] =='.' and file[-4:] == '.tmp']
+            for file in tmpfiles:
+                os.remove(os.getcwd()+'/data/'+file)
+            df = get_df(sats)
+            figure, range_x = get_figure(df, range_x=range_x)
+        
+        elif btn_id == 'dataset_dropdown':
+            sats = get_sats('data/'+dataset)
+            df = get_df(sats)
+            figure, range_x = get_figure(df, range_x=range_x)
+        
         else: #btn_id == 'interval-component'
             #update time only every 5min
             figure, range_x = get_figure(df, range_x=range_x)
 
         return figure
 
-    #import os
     #os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
 
