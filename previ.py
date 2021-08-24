@@ -99,13 +99,16 @@ def get_figure(df, range_x=[]):
 
 def get_df(sats):
     df = pd.DataFrame([])
-    for sat in sats:
-        df = df.append(previ(sat, sats[sat])) 
+    for satid in sats:
+        df = df.append(previ(sats[satid], satid)) 
     return df
 
-def get_sats(database_sats = 'data/maj_sats.data'):
-    with open(database_sats, 'r') as f:
-        sats = {sat:idsat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]}
+def get_sats(datasets=['maj_sats.data']):
+    sats = {}
+    for dataset in datasets:
+        with open('data/'+dataset, 'r') as f:
+            #update sats dict with unique id
+            sats.update({idsat:sat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]})
     return sats
 
 
@@ -119,28 +122,37 @@ if __name__=='__main__':
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
     app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
     app.layout = html.Div([
-        html.Label('Add new satellite'),
-        dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
-        dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
-        html.Button('Add', id='add_button'),
-        html.Button('Refresh', id='refresh_button'),
-        html.Button('Update local database', id='update_local_button'),
-        dcc.Dropdown(
-            options=[
-                {'label': 'ILRS major satelittes', 'value': 'maj_sats.data'},
-                {'label': 'All satelittes', 'value': 'sats.data'},
-                {'label': 'Galileos', 'value': 'galileo.data'}
-            ],
-            value='maj_sats.data', id='dataset_dropdown'
-        ), 
-        dcc.Graph(figure=fig, id='timeline'), 
-        dcc.Interval(
-            id='interval-component',
-            interval=5*60*1000, # 5min (in milliseconds)
-            n_intervals=0
-        )
+        html.H1('MEO Previ'),
+        html.Div([ 
+            html.H2('Options'),
+            html.Div([
+                html.H3('Add new satellite'),
+                dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
+                dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
+                html.Button('Add', id='add_button')]),
+            html.Div([html.H3('Controls'),
+                html.Button('Refresh', id='refresh_button'),
+                html.Button('Update local database', id='update_local_button')]),
+            html.Div([html.H3('Dataset'),
+                dcc.Dropdown(
+                multi=True, disabled=False,
+                options=[
+                    {'label': 'ILRS major satelittes', 'value': 'maj_sats.data'},
+                    {'label': 'All satelittes', 'value': 'sats.data'},
+                    {'label': 'Galileos', 'value': 'galileo.data'}
+                ], value='maj_sats.data', id='dataset_dropdown')]),
+            ], id='option_div'),
+        html.Div([
+            html.H2('Timeline'),
+            dcc.Graph(figure=fig, id='timeline'), 
+            dcc.Interval(
+                id='interval-component',
+                interval=5*60*1000, # 5min (in milliseconds)
+                n_intervals=0)
+            ])
     ])
 
+    
     @app.callback(
         dash.dependencies.Output('timeline', 'figure'),
         [dash.dependencies.Input('refresh_button', 'n_clicks')],
@@ -159,7 +171,7 @@ if __name__=='__main__':
         global df
         global range_x
         global sats
-        
+
         if btn_id == 'add_button':
             #add new satellite to the figure, update time, but keep the range_x
             df = df.append(previ(sat, satid))
@@ -179,7 +191,7 @@ if __name__=='__main__':
             figure, range_x = get_figure(df, range_x=range_x)
         
         elif btn_id == 'dataset_dropdown':
-            sats = get_sats('data/'+dataset)
+            sats = get_sats(dataset)
             df = get_df(sats)
             figure, range_x = get_figure(df, range_x=range_x)
         
@@ -187,7 +199,7 @@ if __name__=='__main__':
             #update time only every 5min
             figure, range_x = get_figure(df, range_x=range_x)
 
-        return figure
+        return figure, btn_id == 'dataset_dropdown'
 
     #os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
