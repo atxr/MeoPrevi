@@ -1,28 +1,28 @@
 # MeoPrevi
-Python script that display the **timeline** of excepted satellites above **Calern** in a browser.
+Python script that displays the **timeline** of excepted satellites above **Calern** in a browser.
 
 
 The timeline is generated for a week, and zooms in automatically at startup at UTC current time, for 2 hours.
-One can change the time range, and select what satellites to display in the timeline in the right column.
+You can change the time span, and select which satellites to display in the timeline in the right column.
 
 ## Installation
 
 To install this script, use the github repo with
 ```bash
-cd /opt; sudo git clone https://github.com/atxr/MeoPrevi
+sudo git clone -C /opt https://github.com/atxr/MeoPrevi; sudo /opt/MeoPrevi/INSTALL.sh
 ```
 
-Otherwise, if you own the archive, exctract it with the command 
+Otherwise, if you have the archive, extract it with the command
 ```bash
-sudo unzip path/to/the/archive -d /opt
+sudo unzip path/to/the/archive -d /opt; sudo /opt/MeoPrevi/INSTALL.sh
 ```
 
 ## Usage
 
-Before using the script, geckodriver, a dependencie of selenium must be placed in the PATH.
+Before using the script, geckodriver, a dependency of selenium must be placed in the PATH.
 The release of geckodriver can be [downloaded here](https://github.com/mozilla/geckodriver/releases)
 
-If you use Linux x64, you can simply use this command to dowload and add geckodriver to your path
+If you use Linux x64, you can simply use this command to download and add geckodriver to your path
 ```bash
 wget 'https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz'; sudo tar -xf geckodriver-v0.29.1-linux64.tar.gz -C /usr/bin
 ```
@@ -42,12 +42,12 @@ The script provide a tool for adding a satelitte directly with its Spacetrack ca
 ## List of satellites
 Different lists of satellites can be found in the data directory. 
 The one used by default is data/maj\_sats.data. 
-List of aviable database:
-- data/maj\_sats.data: most important satellites, accoreded to the [ILRS priority list](https://ilrs.gsfc.nasa.gov/missions/mission_operations/priorities/index.html)
-- data/sats.data: most of the observable satallites from Calern. Warning, because of the length of this database, the display may be bad.
-- data/galileo.data: all Galileo GNSS european satellites
+List of available database:
+- data/maj\_sats.data: most important satellites, according with the [ILRS priority list](https://ilrs.gsfc.nasa.gov/missions/mission_operations/priorities/index.html)
+- data/sats.data: most of the observable satellites from Calern. Warning, because of the length of this database, the display may be bad.
+- data/galileo.data: all Galileo GNSS European satellites
 
-If one wants to change the database, modify at the beginning of previ.py the line 
+If you want to change the database, modify at the beginning of previ.py the line 
 ```python
 import maj_sats.py
 ```
@@ -72,5 +72,5 @@ These modules can be installed with pip for python3.
 - Visualize trajectory of the sat in the sky
 - Select time range for previ
 - Nicer interface
-- Display when dowloading
+- Display when downloading
 
