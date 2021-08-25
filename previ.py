@@ -199,7 +199,7 @@ if __name__=='__main__':
             #update time only every 5min
             figure, range_x = get_figure(df, range_x=range_x)
 
-        return figure, btn_id == 'dataset_dropdown'
+        return figure
 
     #os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
