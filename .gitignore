@@ -1,0 +1,3 @@
+#exclude .SAT.tmp files but not the folder
+!/tmp
+/tmp/*

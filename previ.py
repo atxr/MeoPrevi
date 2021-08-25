@@ -19,7 +19,7 @@ def previ(sat, satid):
     print(sat, end=' - ')
     
     try:
-        f = open('data/.'+sat+'.tmp', 'r')
+        f = open('tmp/.'+sat+'.tmp', 'r')
         beg = datetime.fromisoformat(f.readline().strip('\n'))
         end = datetime.fromisoformat(f.readline().strip('\n'))
         now = datetime.utcnow()
@@ -41,7 +41,7 @@ def previ(sat, satid):
         tab = driver.find_element_by_class_name("standardTable").text
         driver.close()
 
-        with open('data/.'+sat+'.tmp', 'w') as f:
+        with open('tmp/.'+sat+'.tmp', 'w') as f:
             f.write(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write((datetime.utcnow() + timedelta(days=5)).strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write(tab)
@@ -202,10 +202,10 @@ if __name__=='__main__':
 
         elif btn_id == 'update_local_button':
             #redownload every sats tpm file in the database
-            tmpfiles = [file for file in os.listdir(os.getcwd()+'/data') 
+            tmpfiles = [file for file in os.listdir(os.getcwd()+'/tmp') 
                              if file[0] =='.' and file[-4:] == '.tmp']
             for file in tmpfiles:
-                os.remove(os.getcwd()+'/data/'+file)
+                os.remove(os.getcwd()+'/tmp/'+file)
             df = get_df(sats)
             figure, range_x = get_figure(df, range_x=range_x)
         
