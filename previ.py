@@ -136,7 +136,8 @@ if __name__=='__main__':
                     html.Button('Add', id='add_button')]),
                 html.Div([
                     html.H3('Remove satellite'),
-                    dcc.Input(id='rem_sat_name', type='text', placeholder='Satelitte name'), 
+                    dcc.Dropdown(id='rem_sat_name', multi=True, placeholder='Satelitte name',
+                        options=[{'label': sat, 'value': satid} for satid, sat in sats.items()]), 
                     html.Button('Remove', id='remove_button')])
                 ]),
             html.Div([html.H3('Controls'),
@@ -160,8 +161,22 @@ if __name__=='__main__':
                 n_intervals=0)
             ])
     ])
-
     
+    @app.callback(
+            dash.dependencies.Output('new_sat_name', 'value'),
+            dash.dependencies.Output('new_sat_id', 'value'),
+            dash.dependencies.Input('add_button', 'n_clicks'))
+    def clear_add_btn(_):
+        return '', ''
+
+
+    @app.callback(
+            dash.dependencies.Output('rem_sat_name', 'value'),
+            dash.dependencies.Input('remove_button', 'n_clicks'))
+    def clear_rem_btn(_):
+        return ''
+
+
     @app.callback(
         dash.dependencies.Output('timeline', 'figure'),
         [dash.dependencies.Input('refresh_button', 'n_clicks')],
@@ -173,7 +188,7 @@ if __name__=='__main__':
         [dash.dependencies.State('new_sat_name', 'value')],
         [dash.dependencies.State('new_sat_id', 'value')],
         [dash.dependencies.State('rem_sat_name', 'value')])
-    def update_output(n_ref, n_add, n_rem, n_upd_loc, dataset, n_inter, add_sat, add_satid, rem_sat):
+    def update_output(n_ref, n_add, n_rem, n_upd_loc, dataset, n_inter, add_sat, add_satid, l_rem_sat):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise dash.exceptions.PreventUpdate
@@ -191,11 +206,12 @@ if __name__=='__main__':
         
         elif btn_id == 'remove_button':
             #add new satellite to the figure, update time, but keep the range_x
-            sats = {x:y for (x, y) in sats.items() if y != rem_sat} #remove from current dataset
-            try:
-                df = df.loc[df['Sat'] != rem_sat]
-            except KeyError:
-                print("Unable to remove. "+rem_sat+" not found in dataset.")
+            for satid in l_rem_sat:
+                try:
+                    df = df.loc[df['Sat'] != sats[satid]]
+                    del sats[satid]
+                except KeyError:
+                    print("Unable to remove. "+sats[satid]+" not found in dataset.")
 
             figure, range_x = get_figure(df, range_x=range_x)
 
