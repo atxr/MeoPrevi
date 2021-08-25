@@ -65,7 +65,6 @@ Python3 and the following modules:
 These modules can be installed with **pip** for python3.
 
 #TODO 
-- Better deletion of sats
 - Visualize trajectory of the sat in the sky
 - Select time range for previ
 - Nicer interface

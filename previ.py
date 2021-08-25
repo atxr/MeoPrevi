@@ -3,8 +3,9 @@
 
 
 import os
+import pyautogui
 import pandas as pd
-from plotly.express import timeline
+from plotly.express import timeline, line_polar, data
 from selenium import webdriver
 from datetime import datetime, timedelta
 import dash
@@ -67,11 +68,16 @@ def previ(sat, satid):
             ends[i] += timedelta(days=1)
 
     clms = [int(x[sh['clm']][:-1]) for x in lines]
+    p_clms = [x[sh['p_clm']] for x in lines]
     
+    p_sts = [x[sh['p_st']] for x in lines]
+    p_fis = [x[sh['p_fi']] for x in lines]
+
     df=pd.DataFrame([])
-    for beg, end, clm in zip(begs, ends, clms):
+    for beg, end, clm, p_clm, p_st, p_fi in zip(begs, ends, clms, p_clms, p_sts, p_fis):
         if int(clm) > 20:
-            df = df.append([dict(Sat=sat, Start=beg, Finish=end)])
+            traj = [{'theta':x, 'z':y} for x,y in [[p_st, 10], [p_clm, clm], [p_fi, 10]]]
+            df = df.append([dict(Sat=sat, Start=beg, Finish=end, Traj=traj)])
 
     return df
 
@@ -89,7 +95,7 @@ def get_figure(df, range_x=[]):
             x_start = 'Start', x_end='Finish', 
             title="Previ MEO", y='Sat', color='Sat', 
             range_x=range_x, 
-            hover_name='Sat', height=900)
+        hover_name='Sat', height=900, width=width*2/3)
     fig.update_layout(
         hoverlabel=dict(
             font_size=25
@@ -98,6 +104,9 @@ def get_figure(df, range_x=[]):
     fig.add_vline(x=utc, line_width=3, line_dash="dash")
     return fig, range_x
 
+def get_polar(df_polar):
+    return line_polar(df_polar, r="z", theta="theta", range_r=[90,0], title='Trajectory', 
+                    width=(width/3 - 100) , height=(width/3 - 100))
 
 def get_df(sats):
     df = pd.DataFrame([])
@@ -118,9 +127,13 @@ if __name__=='__main__':
     if not os.path.exists('tmp'):
         os.mkdir('tmp')
 
+    width, _ = pyautogui.size()
+
     sats = get_sats()
     df = get_df(sats)
     fig, range_x = get_figure(df)
+    polar = line_polar([])
+
 
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
     app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -154,13 +167,16 @@ if __name__=='__main__':
             ], id='option_div'),
         html.Div([
             html.H2('Timeline'),
-            dcc.Graph(figure=fig, id='timeline'), 
-            dcc.Interval(
-                id='interval-component',
-                interval=5*60*1000, # 5min (in milliseconds)
-                n_intervals=0)
-            ])
-    ])
+            html.Div([
+                dcc.Graph(figure=fig, id='timeline', className='inb'), 
+                dcc.Graph(figure=polar, className='inb', id='polar')], 
+                id='div_graph')
+            ]),
+        dcc.Interval(
+            id='interval-component',
+            interval=5*60*1000, # 5min (in milliseconds)
+            n_intervals=0)
+       ])
     
     @app.callback(
             dash.dependencies.Output('new_sat_name', 'value'),
