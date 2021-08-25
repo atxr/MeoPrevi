@@ -19,25 +19,22 @@ sudo unzip path/to/the/archive -d /opt; sudo /opt/MeoPrevi/INSTALL.sh
 
 ## Usage
 
-Before using the script, geckodriver, a dependency of selenium must be placed in the PATH.
-The release of geckodriver can be [downloaded here](https://github.com/mozilla/geckodriver/releases)
-
-If you use Linux x64, you can simply use this command to download and add geckodriver to your path
+After a successful installation, the server can be started by executing 
 ```bash
-wget 'https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz'; sudo tar -xf geckodriver-v0.29.1-linux64.tar.gz -C /usr/bin
+previ
 ```
 
-Then, to launch the script, execute 
+You can add this command at the boot in the background of your system. For example, on Debian based distro, you can add it to rc.local:
 ```bash
-/opt/MeoPrevi/previ.py
+sudo echo 'previ' >> /etc/rc.local
 ```
-It should automatically open a new tab in the default browser.
-If not, browse directly the link the terminal will print, usually http://127.0.0.1:8050
-If you got trouble with the script, check the dependencies section at the end.
+If you got trouble with this script, check dependency section at the end.
+
+Once the server is running, **browse http://127.0.0.1:8050**.
 
 ## Add satellites
 
-The script provide a tool for adding a satelitte directly with its Spacetrack catalog number. Visit the [following website](https://heavens-above.com/Satellites.aspx) to find Spacetrack catalog numbers of the satellite you want to add.
+The script provide a tool for adding a satellite directly with its Spacetrack catalog number. Visit the [following website](https://heavens-above.com/Satellites.aspx) to find Spacetrack catalog numbers of the satellite you want to add.
 
 ## List of satellites
 Different lists of satellites can be found in the data directory. 
@@ -57,7 +54,7 @@ with the name of the correct database.
 ## Dependencies
 
 Firefox
-Geckodriver for selenium. CF installation section.
+Geckodriver for selenium. The INSTALL.sh script install this dependency for Linux-64. 
 
 Python3 and the following modules:
 - pandas
@@ -65,7 +62,7 @@ Python3 and the following modules:
 - dash
 - selenium
 
-These modules can be installed with pip for python3.
+These modules can be installed with **pip** for python3.
 
 #TODO 
 - Better deletion of sats
