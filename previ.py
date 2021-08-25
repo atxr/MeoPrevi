@@ -115,6 +115,9 @@ def get_sats(datasets=['maj_sats.data']):
 
 
 if __name__=='__main__':
+    if not os.path.exists('tmp'):
+        os.mkdir('tmp')
+
     sats = get_sats()
     df = get_df(sats)
     fig, range_x = get_figure(df)
