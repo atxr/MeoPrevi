@@ -12,6 +12,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
 
 def previ(sat, satid):
     print(sat, end=' - ')
@@ -113,8 +115,6 @@ def get_sats(datasets=['maj_sats.data']):
 
 
 if __name__=='__main__':
-    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
     sats = get_sats()
     df = get_df(sats)
     fig, range_x = get_figure(df)
@@ -126,10 +126,16 @@ if __name__=='__main__':
         html.Div([ 
             html.H2('Options'),
             html.Div([
-                html.H3('Add new satellite'),
-                dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
-                dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
-                html.Button('Add', id='add_button')]),
+                html.Div([
+                    html.H3('Add new satellite'),
+                    dcc.Input(id='new_sat_name', type='text', placeholder='Satelitte name'), 
+                    dcc.Input(id='new_sat_id', type='text', placeholder='Satelitte ID'),
+                    html.Button('Add', id='add_button')]),
+                html.Div([
+                    html.H3('Remove satellite'),
+                    dcc.Input(id='rem_sat_name', type='text', placeholder='Satelitte name'), 
+                    html.Button('Remove', id='remove_button')])
+                ]),
             html.Div([html.H3('Controls'),
                 html.Button('Refresh', id='refresh_button'),
                 html.Button('Update local database', id='update_local_button')]),
@@ -157,12 +163,14 @@ if __name__=='__main__':
         dash.dependencies.Output('timeline', 'figure'),
         [dash.dependencies.Input('refresh_button', 'n_clicks')],
         [dash.dependencies.Input('add_button', 'n_clicks')],
+        [dash.dependencies.Input('remove_button', 'n_clicks')],
         [dash.dependencies.Input('update_local_button', 'n_clicks')],
         [dash.dependencies.Input('dataset_dropdown', 'value')],
         [dash.dependencies.Input('interval-component', 'n_intervals')],
         [dash.dependencies.State('new_sat_name', 'value')],
-        [dash.dependencies.State('new_sat_id', 'value')])
-    def update_output(n_ref, n_add, n_upd_loc, dataset, n_inter, sat, satid):
+        [dash.dependencies.State('new_sat_id', 'value')],
+        [dash.dependencies.State('rem_sat_name', 'value')])
+    def update_output(n_ref, n_add, n_rem, n_upd_loc, dataset, n_inter, add_sat, add_satid, rem_sat):
         ctx = dash.callback_context
         if not ctx.triggered:
             raise dash.exceptions.PreventUpdate
@@ -174,9 +182,20 @@ if __name__=='__main__':
 
         if btn_id == 'add_button':
             #add new satellite to the figure, update time, but keep the range_x
-            df = df.append(previ(sat, satid))
+            sats.update({add_satid: add_sat})
+            df = df.append(previ(add_sat, add_satid))
             figure, range_x = get_figure(df, range_x=range_x)
         
+        elif btn_id == 'remove_button':
+            #add new satellite to the figure, update time, but keep the range_x
+            sats = {x:y for (x, y) in sats.items() if y != rem_sat} #remove from current dataset
+            try:
+                df = df.loc[df['Sat'] != rem_sat]
+            except KeyError:
+                print("Unable to remove. "+rem_sat+" not found in dataset.")
+
+            figure, range_x = get_figure(df, range_x=range_x)
+
         elif btn_id == 'refresh_button':
             #update time and range_x 
             figure, range_x = get_figure(df)
