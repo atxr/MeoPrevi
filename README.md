@@ -9,7 +9,7 @@ You can change the time span, and select which satellites to display in the time
 
 To install this script, use the github repo with
 ```bash
-sudo git clone -C /opt https://github.com/atxr/MeoPrevi; sudo /opt/MeoPrevi/INSTALL.sh
+sudo git -C /opt clone https://github.com/atxr/MeoPrevi; sudo /opt/MeoPrevi/INSTALL.sh
 ```
 
 Otherwise, if you have the archive, extract it with the command
