@@ -65,8 +65,10 @@ Python3 and the following modules:
 These modules can be installed with **pip** for python3.
 
 #TODO 
-- Visualize trajectory of the sat in the sky
 - Select time range for previ
 - Nicer interface
 - Display when downloading
+- More than 3 points for polar
+- Install script bug
+- Force English in Selenium
 
