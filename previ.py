@@ -5,7 +5,7 @@
 import os
 import pyautogui
 import pandas as pd
-from plotly.express import timeline, line_polar, data
+from plotly.express import timeline, line_polar
 from selenium import webdriver
 from datetime import datetime, timedelta
 import dash
@@ -14,6 +14,7 @@ import dash_html_components as html
 
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+#months = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'decembre']
     
 
 def previ(sat, satid):
@@ -109,8 +110,8 @@ def get_polar(df_polar, sat):
                     width=(width/3 - 100) , height=(width/3 - 100))
     polar.update_layout(
             polar = dict(
-                angularaxis_categoryarray = ['N', 'NNW', 'NW', 'WNW', 'W', 'WSW', 'SW', 'SSW', 
-                                             'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE']
+                angularaxis_categoryarray = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 
+                                             'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW']
                 )
             )
     return polar
