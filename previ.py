@@ -94,7 +94,7 @@ def get_figure(df, range_x=[]):
             df, 
             x_start = 'Start', x_end='Finish', 
             title="Previ MEO", y='Sat', color='Sat', 
-            range_x=range_x, 
+            range_x=range_x, custom_data=['Traj'],
         hover_name='Sat', height=900, width=width*2/3)
     fig.update_layout(
         hoverlabel=dict(
@@ -104,14 +104,22 @@ def get_figure(df, range_x=[]):
     fig.add_vline(x=utc, line_width=3, line_dash="dash")
     return fig, range_x
 
-def get_polar(df_polar):
-    return line_polar(df_polar, r="z", theta="theta", range_r=[90,0], title='Trajectory', 
+def get_polar(df_polar, sat):
+    polar = line_polar(df_polar, r="z", theta="theta", range_r=[90,0], title='Trajectory '+sat,
                     width=(width/3 - 100) , height=(width/3 - 100))
+    polar.update_layout(
+            polar = dict(
+                angularaxis_categoryarray = ['N', 'NNW', 'NW', 'WNW', 'W', 'WSW', 'SW', 'SSW', 
+                                             'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE']
+                )
+            )
+    return polar
 
 def get_df(sats):
     df = pd.DataFrame([])
     for satid in sats:
         df = df.append(previ(sats[satid], satid)) 
+    print(df)
     return df
 
 def get_sats(datasets=['maj_sats.data']):
@@ -132,7 +140,7 @@ if __name__=='__main__':
     sats = get_sats()
     df = get_df(sats)
     fig, range_x = get_figure(df)
-    polar = line_polar([])
+    polar = get_polar(pd.DataFrame([{'theta': 'N', 'z': 0}]), '')
 
 
     external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -254,6 +262,16 @@ if __name__=='__main__':
             figure, range_x = get_figure(df, range_x=range_x)
 
         return figure
+
+    
+    @app.callback(
+            dash.dependencies.Output('polar', 'figure'),
+            dash.dependencies.Input('timeline', 'hoverData'))
+    def update_polar(hoverData):
+        if hoverData is None:
+            raise dash.exceptions.PreventUpdate
+        print(hoverData['points'][0])
+        return get_polar(pd.DataFrame(hoverData['points'][0]['customdata'][0]), hoverData['points'][0]['y'])
 
     #os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
