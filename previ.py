@@ -6,7 +6,7 @@ import os
 import pyautogui
 import pandas as pd
 from plotly.express import timeline, line_polar
-from selenium import webdriver
+from selenium import webdriver, common
 from datetime import datetime, timedelta
 import dash
 import dash_core_components as dcc
@@ -39,6 +39,11 @@ def previ(sat, satid):
         options.add_argument("--headless")
         driver = webdriver.Firefox(options=options)
         driver.get(url)
+        try:
+            driver.find_element_by_xpath(xpath="//a[@href='SetCulture.ashx?newcul=en']").click()
+        except common.exceptions.WebDriverException:
+            pass
+
         driver.find_element_by_id("ctl00_cph1_radioAll").click()
         tab = driver.find_element_by_class_name("standardTable").text
         driver.close()
