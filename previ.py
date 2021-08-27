@@ -272,12 +272,12 @@ if __name__=='__main__':
     
     @app.callback(
             dash.dependencies.Output('polar', 'figure'),
-            dash.dependencies.Input('timeline', 'hoverData'))
-    def update_polar(hoverData):
-        if hoverData is None:
+            dash.dependencies.Input('timeline', 'clickData'))
+    def update_polar(clickData):
+        if clickData is None:
             raise dash.exceptions.PreventUpdate
-        print(hoverData['points'][0])
-        return get_polar(pd.DataFrame(hoverData['points'][0]['customdata'][0]), hoverData['points'][0]['y'])
+        print(clickData['points'][0])
+        return get_polar(pd.DataFrame(clickData['points'][0]['customdata'][0]), clickData['points'][0]['y'])
 
     #os.system("sleep 2; xdg-open http://127.0.0.1:8050/")
     app.run_server(debug=True)
