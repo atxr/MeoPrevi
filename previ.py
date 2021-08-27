@@ -14,7 +14,6 @@ import dash_html_components as html
 
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-#months = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'sept.', 'octobre', 'novembre', 'decembre']
     
 
 def previ(sat, satid):
@@ -41,6 +40,7 @@ def previ(sat, satid):
         driver.get(url)
         try:
             driver.find_element_by_xpath(xpath="//a[@href='SetCulture.ashx?newcul=en']").click()
+            driver.get(url)
         except common.exceptions.WebDriverException:
             pass
 
