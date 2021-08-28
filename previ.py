@@ -14,6 +14,8 @@ import dash_html_components as html
 
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+#path = '~/.local/bin/MeoPrevi'
+path = ''
     
 
 def previ(sat, satid):
@@ -177,7 +179,9 @@ if __name__=='__main__':
                     {'label': 'ILRS major satelittes', 'value': 'maj_sats.data'},
                     {'label': 'All satelittes', 'value': 'sats.data'},
                     {'label': 'Galileos', 'value': 'galileo.data'}
-                ], value='maj_sats.data', id='dataset_dropdown')]),
+                ], value='maj_sats.data', id='dataset_dropdown'),
+                dcc.Input(id='save_input', type='text', placeholder='Dataset name'), 
+                html.Button('Save current Dataset', id="save_btn")])
             ], id='option_div'),
         html.Div([
             html.H2('Timeline'),
@@ -192,6 +196,27 @@ if __name__=='__main__':
             n_intervals=0)
        ])
     
+    @app.callback(
+            dash.dependencies.Output('save_input', 'value'),
+            dash.dependencies.Input('save_btn', 'n_clicks'),
+            dash.dependencies.State('save_input', 'value')
+            )
+    def save(n, filename):
+        if n == None or n == 0:
+            raise dash.exceptions.PreventUpdate
+        
+        if filename == '':
+            filename = 'unamed'
+
+        if filename[-5:] == '.data':
+            filename = filename[:-5]
+
+        with open(path+'data/'+filename+'.data', 'w') as f:
+            for satid in sats:
+                f.write(sats[satid]+'~'+satid+'\n')
+            f.close()
+        return ''
+
     @app.callback(
             dash.dependencies.Output('new_sat_name', 'value'),
             dash.dependencies.Output('new_sat_id', 'value'),
