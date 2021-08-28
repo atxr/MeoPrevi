@@ -130,7 +130,7 @@ def get_df(sats):
     print(df)
     return df
 
-def get_sats(datasets=['maj_sats.data']):
+def get_sats(datasets=['ILRS_Satellites.data']):
     sats = {}
     for dataset in datasets:
         with open('data/'+dataset, 'r') as f:
@@ -176,10 +176,9 @@ if __name__=='__main__':
                 dcc.Dropdown(
                 multi=True, disabled=False,
                 options=[
-                    {'label': 'ILRS major satelittes', 'value': 'maj_sats.data'},
-                    {'label': 'All satelittes', 'value': 'sats.data'},
-                    {'label': 'Galileos', 'value': 'galileo.data'}
-                ], value='maj_sats.data', id='dataset_dropdown'),
+                    {'label': dataset[:-5], 'value': dataset}
+                        for dataset in os.listdir(path+'data/')], 
+                        value='ILRS_Satellites.data', id='dataset_dropdown'),
                 dcc.Input(id='save_input', type='text', placeholder='Dataset name'), 
                 html.Button('Save current Dataset', id="save_btn")])
             ], id='option_div'),
@@ -198,10 +197,12 @@ if __name__=='__main__':
     
     @app.callback(
             dash.dependencies.Output('save_input', 'value'),
+            dash.dependencies.Output('dataset_dropdown', 'options'),
             dash.dependencies.Input('save_btn', 'n_clicks'),
-            dash.dependencies.State('save_input', 'value')
+            dash.dependencies.State('save_input', 'value'),
+            dash.dependencies.State('dataset_dropdown', 'options')
             )
-    def save(n, filename):
+    def save(n, filename, opt):
         if n == None or n == 0:
             raise dash.exceptions.PreventUpdate
         
@@ -215,7 +216,7 @@ if __name__=='__main__':
             for satid in sats:
                 f.write(sats[satid]+'~'+satid+'\n')
             f.close()
-        return ''
+        return '', opt + [{'label': filename, 'value': filename+'.data'}]
 
     @app.callback(
             dash.dependencies.Output('new_sat_name', 'value'),
