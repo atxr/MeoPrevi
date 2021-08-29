@@ -147,7 +147,7 @@ def get_sats(datasets=['ILRS_Satellites.data']):
 
 if __name__=='__main__':
     if not os.path.exists(path+'tmp'):
-        os.mkdir(path+'tmp')
+        os.mkdir(path,'tmp')
 
     width, _ = pyautogui.size()
 

@@ -10,12 +10,12 @@ You can also visualize the trajectory of each satellite in the sky.
 
 To install this script, use the github repo with
 ```bash
-git -C ~/.local/bin clone https://github.com/atxr/MeoPrevi; sudo ~/.local/bin/MeoPrevi/INSTALL.sh
+git -C ~/.local/bin clone https://github.com/atxr/MeoPrevi; ~/.local/bin/MeoPrevi/INSTALL.sh
 ```
 
 Otherwise, if you have the archive, extract it with the command
 ```bash
-unzip path/to/the/archive -d ~/.local/bin; sudo ~/.local/bin/MeoPrevi/INSTALL.sh
+unzip path/to/the/archive -d ~/.local/bin; ~/.local/bin/MeoPrevi/INSTALL.sh
 ```
 
 ## Usage
