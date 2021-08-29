@@ -3,6 +3,7 @@
 
 
 import os
+from sys import argv
 import pyautogui
 import pandas as pd
 from plotly.express import timeline, line_polar
@@ -14,15 +15,20 @@ import dash_html_components as html
 
 
 months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-#path = '~/.local/bin/MeoPrevi'
-path = ''
+
+try:
+   path = argv[1] 
+   if path[-1] != '/':
+       path += '/'
+except:
+   path = '~/.local/bin/MeoPrevi/'
     
 
 def previ(sat, satid):
     print(sat, end=' - ')
     
     try:
-        f = open('tmp/.'+sat+'.tmp', 'r')
+        f = open(path+'tmp/.'+sat+'.tmp', 'r')
         beg = datetime.fromisoformat(f.readline().strip('\n'))
         end = datetime.fromisoformat(f.readline().strip('\n'))
         now = datetime.utcnow()
@@ -50,7 +56,7 @@ def previ(sat, satid):
         tab = driver.find_element_by_class_name("standardTable").text
         driver.close()
 
-        with open('tmp/.'+sat+'.tmp', 'w') as f:
+        with open(path+'tmp/.'+sat+'.tmp', 'w') as f:
             f.write(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write((datetime.utcnow() + timedelta(days=5)).strftime("%Y-%m-%d %H:%M:%S\n"))
             f.write(tab)
@@ -133,15 +139,15 @@ def get_df(sats):
 def get_sats(datasets=['ILRS_Satellites.data']):
     sats = {}
     for dataset in datasets:
-        with open('data/'+dataset, 'r') as f:
+        with open(path+'data/'+dataset, 'r') as f:
             #update sats dict with unique id
             sats.update({idsat:sat for [sat, idsat] in [x.strip('\n').split('~') for x in f.readlines()]})
     return sats
 
 
 if __name__=='__main__':
-    if not os.path.exists('tmp'):
-        os.mkdir('tmp')
+    if not os.path.exists(path+'tmp'):
+        os.mkdir(path+'tmp')
 
     width, _ = pyautogui.size()
 
@@ -277,10 +283,10 @@ if __name__=='__main__':
 
         elif btn_id == 'update_local_button':
             #redownload every sats tpm file in the database
-            tmpfiles = [file for file in os.listdir(os.getcwd()+'/tmp') 
+            tmpfiles = [file for file in os.listdir(path+'tmp') 
                              if file[0] =='.' and file[-4:] == '.tmp']
             for file in tmpfiles:
-                os.remove(os.getcwd()+'/tmp/'+file)
+                os.remove(path+'tmp/'+file)
             df = get_df(sats)
             figure, range_x = get_figure(df, range_x=range_x)
         
