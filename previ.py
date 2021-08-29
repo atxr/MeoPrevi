@@ -21,7 +21,7 @@ try:
    if path[-1] != '/':
        path += '/'
 except:
-   path = '~/.local/bin/MeoPrevi/'
+   path = '/home/'+os.getlogin()+'/.local/bin/MeoPrevi/'
     
 
 def previ(sat, satid):
@@ -147,7 +147,7 @@ def get_sats(datasets=['ILRS_Satellites.data']):
 
 if __name__=='__main__':
     if not os.path.exists(path+'tmp'):
-        os.mkdir(path,'tmp')
+        os.mkdir(path+'tmp')
 
     width, _ = pyautogui.size()
 
